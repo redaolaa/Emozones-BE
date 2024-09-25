@@ -62,16 +62,16 @@ export const createPost = async (req: Request, res: Response) => {
   );
 console.log("creating post- incoming request body:", req.body)
 console.log("creating post- current user", req.currentUser)
-  // ! in order to create a movie, the schema requires a "user" field
+  // ! in order to create a post, the schema requires a "user" field
   // ! and thus we must pull that out of the req.currentUser variable (which
   // !    is populated by the jwt validation code)
-  req.body.user = req.currentUser._id;
+  req.body.user = req.currentUser._id; // depends on secure route
+  // CAN ALSO USE: res.locals.currentUser   and delete  types folder in index.d.ts that fixes the linting iissue
+  // in the above code under currentUser but need to do this with all codes like this 
   try {
     const post = await Posts.create(req.body);
     console.log("post succefully created:", post)
 
-    // we have the ids of the actors in the movie. We need to add the movie id to the actors
-    // ['3454fefer3r', '3243ruroywedqs']
 
     res.send(post);
   } catch (error) {
@@ -88,13 +88,12 @@ export const getPostById = async (req: Request, res: Response) => {
   try {
     // ! 1) Get the id I need to GET my post
     const postId = req.params.postId;
-    // ! 2) Find my movie
-    const foundPost = await Posts.findById(postId) // ? The populate method is used to get the actors' data.
-    // const foundPost = await Posts.findById(postId).populate("actors");
+    // ! 2) Find my post
+    const foundPost = await Posts.findById(postId) // ? The populate method is used to get more data if created like reviews or actor
 
     console.log(foundPost);
     // const foundPost = await Posts.findOne({ _id: postId }) // ? Alternative method.
-    // ! 3) Send back the movie you found!
+    // ! 3) Send back the post you found!
     res.send(foundPost);
 
     // * The catch part "catches" the error that was "thrown". We can handle it in here.

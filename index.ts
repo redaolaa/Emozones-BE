@@ -8,7 +8,7 @@ import router from './config/router';
 const app = express();
 app.use(cors())
 
-app.use(express.json());
+app.use(express.json()); 
 app.use('/api', router)
 
 const dbURI : any = process.env.DB_URI
