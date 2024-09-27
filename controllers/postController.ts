@@ -4,14 +4,11 @@ import formatValidationError from "../errors/validation";
 
 export const updatePost = async (req: Request, res: Response) => {
   try {
-    // ! 1) Get the post
     const postId = req.params.postId;
     const update = req.body;
-    // ! 2) Update the post
     const updatedPost = await Posts.findByIdAndUpdate(postId, update, {
       new: true,
     }); // ? The final argument returns the updated post.
-    // ! 3) Send back the post you've updated
     res.send(updatedPost);
   } catch (error) {
     return res.status(400).send(error);
@@ -62,12 +59,8 @@ export const createPost = async (req: Request, res: Response) => {
   );
 console.log("creating post- incoming request body:", req.body)
 console.log("creating post- current user", req.currentUser)
-  // ! in order to create a post, the schema requires a "user" field
-  // ! and thus we must pull that out of the req.currentUser variable (which
-  // !    is populated by the jwt validation code)
-  req.body.user = req.currentUser._id; // depends on secure route
-  // CAN ALSO USE: res.locals.currentUser   and delete  types folder in index.d.ts that fixes the linting iissue
-  // in the above code under currentUser but need to do this with all codes like this 
+
+  req.body.user = req.currentUser._id; 
   try {
     const post = await Posts.create(req.body);
     console.log("post succefully created:", post)
@@ -84,19 +77,14 @@ console.log("creating post- current user", req.currentUser)
 };
 
 export const getPostById = async (req: Request, res: Response) => {
-  // * The try part contains the code that can throw an error.
   try {
-    // ! 1) Get the id I need to GET my post
     const postId = req.params.postId;
-    // ! 2) Find my post
     const foundPost = await Posts.findById(postId) // ? The populate method is used to get more data if created like reviews or actor
 
     console.log(foundPost);
     // const foundPost = await Posts.findOne({ _id: postId }) // ? Alternative method.
-    // ! 3) Send back the post you found!
     res.send(foundPost);
 
-    // * The catch part "catches" the error that was "thrown". We can handle it in here.
   } catch (e) {
     console.log(e);
     res.send({ message: "Post not found. Did you provide a valid postId?" });
